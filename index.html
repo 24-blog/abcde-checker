@@ -137,6 +137,16 @@ result.className = "p-4 mb-4 rounded-lg text-white text-center font-bold bg-gree
 
 // ダウンロード
 function download(){
+
+const a = document.getElementById("a");
+const rr = document.getElementById("rr");
+const spo2 = document.getElementById("spo2");
+const pulse = document.getElementById("pulse");
+const skin = document.getElementById("skin");
+const d = document.getElementById("d");
+const temp = document.getElementById("temp");
+const bleed = document.getElementById("bleed");
+
 const text = `
 【ABCDE評価】
 A: ${a.value}
@@ -153,7 +163,7 @@ const aTag = document.createElement("a");
 aTag.href = url;
 aTag.download = "abcde.txt";
 aTag.click();
-}
+          }
 
 // ★ service worker登録（ここ重要）
 if ('serviceWorker' in navigator) {
