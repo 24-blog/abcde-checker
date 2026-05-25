@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ABCDEチェッカー</title>
 
-<!-- ★PWA設定 -->
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#2C7A51">
 
@@ -16,12 +15,10 @@
 
 <h1 class="text-xl font-bold mb-4">ABCDEチェッカー</h1>
 
-<!-- 判定表示 -->
 <div id="result" class="p-4 mb-4 rounded-lg text-white text-center font-bold bg-gray-400">
 未評価
 </div>
 
-<!-- A -->
 <section class="mb-4">
 <h2 class="font-bold">A 気道</h2>
 <select id="a" class="w-full p-2 border">
@@ -32,14 +29,12 @@
 </select>
 </section>
 
-<!-- B -->
 <section class="mb-4">
 <h2 class="font-bold">B 呼吸</h2>
 <input type="number" id="rr" placeholder="呼吸数 /分" class="w-full p-2 border mb-2">
 <input type="number" id="spo2" placeholder="SpO2 %" class="w-full p-2 border">
 </section>
 
-<!-- C -->
 <section class="mb-4">
 <h2 class="font-bold">C 循環</h2>
 <input type="number" id="pulse" placeholder="脈拍" class="w-full p-2 border mb-2">
@@ -52,7 +47,6 @@
 </select>
 </section>
 
-<!-- D -->
 <section class="mb-4">
 <h2 class="font-bold">D 意識（AVPU）</h2>
 <select id="d" class="w-full p-2 border">
@@ -63,7 +57,6 @@
 </select>
 </section>
 
-<!-- E -->
 <section class="mb-4">
 <h2 class="font-bold">E 体温・外傷</h2>
 <input type="number" id="temp" placeholder="体温" class="w-full p-2 border mb-2">
@@ -74,6 +67,10 @@
 <option value="緊急">大量</option>
 </select>
 </section>
+
+<button id="btn-evaluate" class="bg-blue-600 text-white w-full p-3 rounded mb-2">
+評価する
+</button>
 
 <button onclick="download()" class="bg-green-600 text-white w-full p-3 rounded">
 ダウンロード
@@ -104,12 +101,12 @@ const bleed = val("bleed");
 if(a === "緊急") level = "緊急";
 else if(a === "注意" && level !== "緊急") level = "注意";
 
-// B
-if(rr && (rr < 10 || rr > 24)) level = "緊急";
-if(spo2 && spo2 < 92) level = "緊急";
+// B (未入力スキップ対応も追加しておきました)
+if(val("rr") !== "" && (rr < 10 || rr > 24)) level = "緊急";
+if(val("spo2") !== "" && spo2 < 92) level = "緊急";
 
 // C
-if(pulse && (pulse > 120 || pulse < 50)) level = "緊急";
+if(val("pulse") !== "" && (pulse > 120 || pulse < 50)) level = "緊急";
 if(["蒼白","冷感","発汗"].includes(skin) && level !== "緊急") level = "注意";
 
 // D
@@ -163,7 +160,7 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('service-worker.js');
 }
 
-  // ボタンにクリックイベントを登録
+// ★ クリックイベントの登録
 document.getElementById("btn-evaluate").addEventListener("click", evaluate);
 
 </script>
