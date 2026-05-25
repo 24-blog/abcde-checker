@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ABCDEチェッカー</title>
+
+<!-- ★PWA設定（ここ重要） -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2C7A51">
+
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-50 p-4 max-w-md mx-auto">
+
+<h1 class="text-xl font-bold mb-4">ABCDEチェッカー</h1>
+
+<!-- 判定表示 -->
+<div id="result" class="p-4 mb-4 rounded-lg text-white text-center font-bold bg-gray-400">
+未評価
+</div>
+
+<!-- A -->
+<section class="mb-4">
+<h2 class="font-bold">A 気道</h2>
+<select id="a" class="w-full p-2 border">
+<option value="">選択</option>
+<option value="正常">正常</option>
+<option value="注意">いびき様・分泌物</option>
+<option value="緊急">閉塞疑い</option>
+</select>
+</section>
+
+<!-- B -->
+<section class="mb-4">
+<h2 class="font-bold">B 呼吸</h2>
+<input type="number" id="rr" placeholder="呼吸数 /分" class="w-full p-2 border mb-2">
+<input type="number" id="spo2" placeholder="SpO2 %" class="w-full p-2 border">
+</section>
+
+<!-- C -->
+<section class="mb-4">
+<h2 class="font-bold">C 循環</h2>
+<input type="number" id="pulse" placeholder="脈拍" class="w-full p-2 border mb-2">
+<select id="skin" class="w-full p-2 border">
+<option value="">皮膚状態</option>
+<option>正常</option>
+<option>蒼白</option>
+<option>冷感</option>
+<option>発汗</option>
+</select>
+</section>
+
+<!-- D -->
+<section class="mb-4">
+<h2 class="font-bold">D 意識（AVPU）</h2>
+<select id="d" class="w-full p-2 border">
+<option value="">選択</option>
+<option value="正常">A 清明</option>
+<option value="注意">V 呼びかけ反応</option>
+<option value="緊急">P/U 反応低下</option>
+</select>
+</section>
+
+<!-- E -->
+<section class="mb-4">
+<h2 class="font-bold">E 体温・外傷</h2>
+<input type="number" id="temp" placeholder="体温" class="w-full p-2 border mb-2">
+<select id="bleed" class="w-full p-2 border">
+<option value="">出血</option>
+<option value="正常">なし</option>
+<option value="注意">軽度</option>
+<option value="緊急">大量</option>
+</select>
+</section>
+
+<button onclick="evaluate()" class="bg-blue-600 text-white w-full p-3 rounded mb-2">
+評価する
+</button>
+
+<button onclick="download()" class="bg-green-600 text-white w-full p-3 rounded">
+ダウンロード
+</button>
+
+<script>
+// 判定ロジック
+function evaluate(){
+
+let level = "正常";
+
+// A
+const a = document.getElementById("a").value;
+if(a === "緊急") level = "緊急";
+else if(a === "注意" && level !== "緊急") level = "注意";
+
+// B
+const rr = Number(document.getElementById("rr").value);
+const spo2 = Number(document.getElementById("spo2").value);
+
+if(rr && (rr < 10 || rr > 24)) level = "緊急";
+if(spo2 && spo2 < 92) level = "緊急";
+
+// C
+const pulse = Number(document.getElementById("pulse").value);
+const skin = document.getElementById("skin").value;
+
+if(pulse && (pulse > 120 || pulse < 50)) level = "緊急";
+if(["蒼白","冷感","発汗"].includes(skin) && level !== "緊急") level = "注意";
+
+// D
+const d = document.getElementById("d").value;
+if(d === "緊急") level = "緊急";
+else if(d === "注意" && level !== "緊急") level = "注意";
+
+// E
+const bleed = document.getElementById("bleed").value;
+if(bleed === "緊急") level = "緊急";
+else if(bleed === "注意" && level !== "緊急") level = "注意";
+
+// 表示
+const result = document.getElementById("result");
+
+if(level === "緊急"){
+result.innerText = "緊急対応";
+result.className = "p-4 mb-4 rounded-lg text-white text-center font-bold bg-red-600";
+}
+else if(level === "注意"){
+result.innerText = "要観察";
+result.className = "p-4 mb-4 rounded-lg text-white text-center font-bold bg-yellow-500";
+}
+else{
+result.innerText = "安定";
+result.className = "p-4 mb-4 rounded-lg text-white text-center font-bold bg-green-600";
+}
+}
+
+// ダウンロード
+function download(){
+const text = `
+【ABCDE評価】
+A: ${a.value}
+B: RR=${rr.value} SpO2=${spo2.value}
+C: Pulse=${pulse.value} Skin=${skin.value}
+D: ${d.value}
+E: Temp=${temp.value} Bleed=${bleed.value}
+`;
+
+const blob = new Blob([text], {type: "text/plain"});
+const url = URL.createObjectURL(blob);
+
+const aTag = document.createElement("a");
+aTag.href = url;
+aTag.download = "abcde.txt";
+aTag.click();
+}
+
+// ★ service worker登録（ここ重要）
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('service-worker.js');
+}
+</script>
+
+</body>
+</html>
