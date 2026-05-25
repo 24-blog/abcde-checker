@@ -75,10 +75,6 @@
 </select>
 </section>
 
-<button onclick="evaluate()" class="bg-blue-600 text-white w-full p-3 rounded mb-2">
-評価する
-</button>
-
 <button onclick="download()" class="bg-green-600 text-white w-full p-3 rounded">
 ダウンロード
 </button>
@@ -167,7 +163,10 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('service-worker.js');
 }
 
-          </script>
+  // ボタンにクリックイベントを登録
+document.getElementById("btn-evaluate").addEventListener("click", evaluate);
+
+</script>
           
 </body>
 </html>
