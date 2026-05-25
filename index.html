@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ABCDEチェッカー</title>
 
-<!-- ★PWA設定（ここ重要） -->
+<!-- ★PWA設定 -->
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#2C7A51">
 
@@ -84,37 +84,43 @@
 </button>
 
 <script>
-// 判定ロジック
+
+// 安全に値を取得する関数
+function val(id){
+  const el = document.getElementById(id);
+  return el ? el.value : "";
+}
+
+// 判定
 function evaluate(){
 
 let level = "正常";
 
+const a = val("a");
+const rr = Number(val("rr"));
+const spo2 = Number(val("spo2"));
+const pulse = Number(val("pulse"));
+const skin = val("skin");
+const d = val("d");
+const bleed = val("bleed");
+
 // A
-const a = document.getElementById("a").value;
 if(a === "緊急") level = "緊急";
 else if(a === "注意" && level !== "緊急") level = "注意";
 
 // B
-const rr = Number(document.getElementById("rr").value);
-const spo2 = Number(document.getElementById("spo2").value);
-
 if(rr && (rr < 10 || rr > 24)) level = "緊急";
 if(spo2 && spo2 < 92) level = "緊急";
 
 // C
-const pulse = Number(document.getElementById("pulse").value);
-const skin = document.getElementById("skin").value;
-
 if(pulse && (pulse > 120 || pulse < 50)) level = "緊急";
 if(["蒼白","冷感","発汗"].includes(skin) && level !== "緊急") level = "注意";
 
 // D
-const d = document.getElementById("d").value;
 if(d === "緊急") level = "緊急";
 else if(d === "注意" && level !== "緊急") level = "注意";
 
 // E
-const bleed = document.getElementById("bleed").value;
 if(bleed === "緊急") level = "緊急";
 else if(bleed === "注意" && level !== "緊急") level = "注意";
 
@@ -138,22 +144,13 @@ result.className = "p-4 mb-4 rounded-lg text-white text-center font-bold bg-gree
 // ダウンロード
 function download(){
 
-const a = document.getElementById("a");
-const rr = document.getElementById("rr");
-const spo2 = document.getElementById("spo2");
-const pulse = document.getElementById("pulse");
-const skin = document.getElementById("skin");
-const d = document.getElementById("d");
-const temp = document.getElementById("temp");
-const bleed = document.getElementById("bleed");
-
 const text = `
 【ABCDE評価】
-A: ${a.value}
-B: RR=${rr.value} SpO2=${spo2.value}
-C: Pulse=${pulse.value} Skin=${skin.value}
-D: ${d.value}
-E: Temp=${temp.value} Bleed=${bleed.value}
+A: ${val("a")}
+B: RR=${val("rr")} SpO2=${val("spo2")}
+C: Pulse=${val("pulse")} Skin=${val("skin")}
+D: ${val("d")}
+E: Temp=${val("temp")} Bleed=${val("bleed")}
 `;
 
 const blob = new Blob([text], {type: "text/plain"});
@@ -163,13 +160,14 @@ const aTag = document.createElement("a");
 aTag.href = url;
 aTag.download = "abcde.txt";
 aTag.click();
-          }
+}
 
-// ★ service worker登録（ここ重要）
+// Service Worker
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('service-worker.js');
 }
-</script>
 
+          </script>
+          
 </body>
 </html>
