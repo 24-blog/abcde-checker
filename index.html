@@ -101,7 +101,7 @@ const bleed = val("bleed");
 if(a === "緊急") level = "緊急";
 else if(a === "注意" && level !== "緊急") level = "注意";
 
-// B (未入力スキップ対応も追加しておきました)
+// B
 if(val("rr") !== "" && (rr < 10 || rr > 24)) level = "緊急";
 if(val("spo2") !== "" && spo2 < 92) level = "緊急";
 
@@ -120,16 +120,20 @@ else if(bleed === "注意" && level !== "緊急") level = "注意";
 // 表示
 const result = document.getElementById("result");
 
+// ★現在日時を取得してフォーマットする（YYYY/MM/DD HH:MM:SS）
+const now = new Date();
+const timeStr = `${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+
 if(level === "緊急"){
-result.innerText = "緊急対応";
+result.innerHTML = `緊急対応<br><span class="text-xs font-normal">評価日時: ${timeStr}</span>`;
 result.className = "p-4 mb-4 rounded-lg text-white text-center font-bold bg-red-600";
 }
 else if(level === "注意"){
-result.innerText = "要観察";
+result.innerHTML = `要観察<br><span class="text-xs font-normal">評価日時: ${timeStr}</span>`;
 result.className = "p-4 mb-4 rounded-lg text-white text-center font-bold bg-yellow-500";
 }
 else{
-result.innerText = "安定";
+result.innerHTML = `安定<br><span class="text-xs font-normal">評価日時: ${timeStr}</span>`;
 result.className = "p-4 mb-4 rounded-lg text-white text-center font-bold bg-green-600";
 }
 }
@@ -137,8 +141,13 @@ result.className = "p-4 mb-4 rounded-lg text-white text-center font-bold bg-gree
 // ダウンロード
 function download(){
 
+// ダウンロード時にその瞬間の時間を取得する
+const now = new Date();
+const timeStr = `${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+
 const text = `
 【ABCDE評価】
+評価日時: ${timeStr}
 A: ${val("a")}
 B: RR=${val("rr")} SpO2=${val("spo2")}
 C: Pulse=${val("pulse")} Skin=${val("skin")}
@@ -151,7 +160,7 @@ const url = URL.createObjectURL(blob);
 
 const aTag = document.createElement("a");
 aTag.href = url;
-aTag.download = "abcde.txt";
+aTag.download = `abcde_${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}.txt`; // ファイル名にも日付が入るようにしました
 aTag.click();
 }
 
