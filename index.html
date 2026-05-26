@@ -127,14 +127,29 @@ const timeStr = `${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')
 if(level === "緊急"){
 result.innerHTML = `緊急対応<br><span class="text-xs font-normal">評価日時: ${timeStr}</span>`;
 result.className = "p-4 mb-4 rounded-lg text-white text-center font-bold bg-red-600";
+// 119ボタンを表示（既存なら更新しない）
+let callBtn = document.getElementById("btn-119");
+if(!callBtn){
+  callBtn = document.createElement("a");
+  callBtn.id = "btn-119";
+  callBtn.href = "tel:119";
+  callBtn.className = "block bg-red-700 text-white w-full p-4 rounded mb-2 text-center text-lg font-bold tracking-widest animate-pulse";
+  callBtn.textContent = "📞 119に発信";
+  document.getElementById("btn-evaluate").insertAdjacentElement("afterend", callBtn);
+}
+callBtn.style.display = "block";
 }
 else if(level === "注意"){
 result.innerHTML = `要観察<br><span class="text-xs font-normal">評価日時: ${timeStr}</span>`;
 result.className = "p-4 mb-4 rounded-lg text-white text-center font-bold bg-yellow-500";
+const callBtn = document.getElementById("btn-119");
+if(callBtn) callBtn.style.display = "none";
 }
 else{
 result.innerHTML = `安定<br><span class="text-xs font-normal">評価日時: ${timeStr}</span>`;
 result.className = "p-4 mb-4 rounded-lg text-white text-center font-bold bg-green-600";
+const callBtn = document.getElementById("btn-119");
+if(callBtn) callBtn.style.display = "none";
 }
 }
 
